@@ -26,13 +26,16 @@ class AsetController extends Controller
                 'kategori.kategori',
                 'tbl_unit.nm_unit'
             )
-           
+
             ->where('aset.id', $id)->join('kategori', 'aset.id_kategori', '=', 'kategori.id')
             ->join('tbl_unit', 'aset.id_unit', '=', 'tbl_unit.id')->first();
 
+        $pinjam = DB::table('tbl_mohon')->where('id_aset', $id)->where('status', 2)->get();
+
         $data = [
             'title' => 'Aset Detail',
-            'aset' => $aset
+            'aset' => $aset,
+            'pinjam' => $pinjam,
         ];
         return view('user.aset_detail', $data);
     }
@@ -69,6 +72,8 @@ class AsetController extends Controller
             ]); // 422: Unprocessable Entity
         }
 
+
+
         // Proses data dan simpan ke dalam database
         $id_aset = $request->input('id_aset');
         $id_user = $request->input('id_user');
@@ -89,6 +94,28 @@ class AsetController extends Controller
             ->where('id_user', $id_user)
             ->where('status', 0)
             ->exists();
+
+        // Periksa apakah ada permohonan lain dengan id_aset yang sudah ada dalam rentang tgl_mulai dan tgl_akhir
+        $overlapExists = DB::table('tbl_mohon')
+            ->where('status', 2)
+            ->where(function ($query) use ($tgl_mulai, $tgl_akhir) {
+                $query->whereBetween('tgl_mulai', [$tgl_mulai, $tgl_akhir])
+                    ->orWhereBetween('tgl_akhir', [$tgl_mulai, $tgl_akhir])
+                    ->orWhere(function ($query) use ($tgl_mulai, $tgl_akhir) {
+                        $query->where('tgl_mulai', '<=', $tgl_mulai)
+                            ->where('tgl_akhir', '>=', $tgl_akhir);
+                    });
+            })
+            ->exists();
+
+        if ($overlapExists) {
+            // Jika ada data tumpang tindih, kembalikan respons dengan pesan
+            return response()->json([
+                'success' => false,
+                'message' => 'Sudah ada permohonan dalam rentang tanggal tersebut.'
+            ]); // 409 Conflict
+        }
+
 
         if ($exists) {
             // Jika data sudah ada, kembalikan respons dengan pesan
@@ -169,6 +196,4 @@ class AsetController extends Controller
         ];
         return view('user.my_aset', $data);
     }
-
-    
 }

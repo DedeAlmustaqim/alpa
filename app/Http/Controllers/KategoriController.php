@@ -11,9 +11,11 @@ class KategoriController extends Controller
 {
     public function index($id)
     {
+        $kategori = DB::table('kategori')->where('id', $id)->first();
         $data = [
-            'title' => 'title',
-            'id'=> $id
+            'title' => 'Kategori',
+            'id'=> $id,
+            'nm_kategori'=> $kategori->kategori,
         ];
         return view('kategori', $data);
     }
@@ -29,6 +31,7 @@ class KategoriController extends Controller
                 'aset.nama_aset',
                 'aset.id_kategori',
                 'aset.deskripsi',
+                'aset.status',
                 'aset.img',
                 'aset.created_at',
                 'aset.updated_at',

@@ -120,7 +120,10 @@
         $(document).ready(function() {
 
             showOpd()
-
+            $('#modalOpd').on('hidden.bs.modal', function() {
+                // Reset form ketika modal ditutup
+                $("#formOpd")[0].reset();
+            });
         });
 
 

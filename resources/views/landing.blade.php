@@ -1,6 +1,7 @@
 @extends('layout_user.app')
 
 @section('content')
+    @include('partial/kategori')
     {{-- <div class="slider-area">
         <!-- Slider -->
         <div class="block-slider block-slider4">
@@ -48,7 +49,7 @@
     </div> <!-- End slider area --> --}}
 
     <div class="container">
-        <h3 class="">Aset Tersedia</h3>
+
         <div class="row" id="aset-container">
 
         </div>
@@ -97,28 +98,33 @@
                             var tgl = konversiFormatTanggal(item.akhir_date)
                             var asetHTML = `
                         <div class="col-md-4 col-sm-6">
-                    <div class="single-shop-product">
+                        <div class="single-shop-product">
                         <div class="product-upper">
                             <img height="200px" src="${item.img}" alt="">
                              
                         </div>
                         <h2><a href="">${item.nama_aset}</a></h2>
                         <div class="product-description">
-${item.status == 1 
-                    ? `
-                            <span class="badge" style="padding:5px; position: absolute; background:#e97451; font-size:12px; top: 20px; left: 20px;">Dipinjam</span>
-                            <span class="badge" style="padding:5px; position: absolute; background:#e97451; font-size:10px; top: 45px; left: 20px;">Berakhir : ${tgl} - ${item.akhir_time}</span>`
-                    : `
-                            <span class="badge" style="padding:5px; position: absolute; background:#3cb371; font-size:12px; top: 20px; left: 20px;">Tersedia</span>`
-                }                        <p class="text-secondary">NIB : ${item.nib_aset}</p>
+                        ${item.status === 0 
+                        ? `
+                            <span class="badge" style="padding:5px; position: absolute; background:#3cb371; font-size:12px; top: 20px; left: 20px;">Tersedia</span>
+                        `
+                        :  item.status === 1 
+                        ? `
+                        <span class="badge" style="padding:5px; position: absolute; background:#FF0000; font-size:12px; top: 20px; left: 20px;">Pemeliharaan</span>
+                        `
+                        : ''
+                    }
+                        <p class="text-secondary">NIB : ${item.nib_aset}</p>
                         <p class="text-secondary">${item.nm_unit}</p>
-                        </div>
+                    </div>
+
                        
-                      <div class="product-option-shop">
+                        <div class="product-option-shop">
                             <a class="add_to_cart_button"  href="${BASE_URL}/aset-detail/${item.id_aset}">Pinjam</a>
+                            </div>
                         </div>
-                     </div>
-                </div>
+                        </div>
                         
                     `;
                             $('#aset-container').append(asetHTML);

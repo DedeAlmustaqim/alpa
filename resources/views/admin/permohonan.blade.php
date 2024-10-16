@@ -34,7 +34,6 @@
                             <th width="10%">Foto</th>
                             <th width="18%">NIB</th>
                             <th width="18%">Kategori</th>
-                            <th width="18%">Status</th>
                             <th width="18%">Unit Kerja</th>
                             <th>Jumlah Pemohon</th>
                             <th width="5%"> </th>
@@ -243,12 +242,7 @@
                             return '<div class="text-left">' + data.kategori + '</div>'
                         }
                     },
-                    {
-                        "orderable": false,
-                        "data": function(data) {
-                            return '<div class="text-left">' + data.status + '</div>'
-                        }
-                    },
+                    
                     {
                         "orderable": false,
                         "data": function(data) {

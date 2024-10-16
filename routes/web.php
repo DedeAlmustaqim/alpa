@@ -44,13 +44,15 @@ Route::post('logout', [LoginController::class, 'logout']);
 
 
 
-Route::middleware(['auth', 'role:admin,opd'])->group(function () {
+Route::middleware(['auth', 'role:admin,opd,verifikator,'])->group(function () {
     Route::prefix('admin')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
         Route::get('aset', [AdminAsetController::class, 'index']);
         Route::get('aset-pinjam', [AdminAsetController::class, 'asetPinjam']);
         Route::post('aset', [AdminAsetController::class, 'store']);
+        Route::post('aset-update', [AdminAsetController::class, 'update']);
         Route::get('get-aset', [AdminAsetController::class, 'getAset']);
+        Route::get('get-aset-by-id/{id}', [AdminAsetController::class, 'getDataAsetbyId']);
         Route::get('get-aset', [AdminAsetController::class, 'getAsetDatatable']);
         Route::get('/get-aset-pinjam-data', [AdminAsetController::class, 'getAsetDatatablePinjam']);
         Route::post('del-aset/{id}', [AdminAsetController::class, 'destroy']);
@@ -62,11 +64,25 @@ Route::middleware(['auth', 'role:admin,opd'])->group(function () {
         Route::get('/getAsetMohon/{id}', [PermohonanController::class, 'getAsetMohon']);
         Route::get('/getAsetMohonFinish/{id}', [PermohonanController::class, 'getAsetMohonFinish']);
         Route::get('/getDataMohon/{id}', [PermohonanController::class, 'getDataMohon']);
+        Route::get('/get-data-mohon-verif/{id}', [PermohonanController::class, 'getAsetMohonVerif']);
+        Route::get('/get-data-mohon-reject/{id}', [PermohonanController::class, 'getAsetMohonReject']);
+        Route::get('/get-data-mohon-accept/{id}', [PermohonanController::class, 'getAsetMohonAccept']);
+        Route::get('/get-data-status/{id}', [PermohonanController::class, 'getDataStatus']);
         Route::post('/accept-aset', [PermohonanController::class, 'update']);
         Route::get('/getDataAsetId/{id}', [PermohonanController::class, 'getDataAsetId']);
-        Route::post('/finishAset/{id}/{idmohon}', [PermohonanController::class, 'finishAset']);
+        Route::post('/finishAset/{idmohon}', [PermohonanController::class, 'finishAset']);
+        //selesai
         Route::get('/permohonan-finish', [PermohonanController::class, 'getAsetMohonFinishAll']);
         Route::get('/permohonan-finish-all-data', [PermohonanController::class, 'getAsetMohonFinishAllData']);
+
+        //verifikasi
+        Route::get('/permohonan-verif', [PermohonanController::class, 'getAsetMohonVerifAll']);
+        Route::get('/permohonan-verif-all-data', [PermohonanController::class, 'getAsetMohonVerifAllData']);
+
+        //reject
+        Route::get('/permohonan-reject', [PermohonanController::class, 'getAsetMohonRejectAll']);
+        Route::get('/permohonan-reject-all-data', [PermohonanController::class, 'getAsetMohonRejectAllData']);
+
 
         Route::get('/admin-opd', [UserController::class, 'adminOpd']);
         Route::get('/user', [UserController::class, 'user']);

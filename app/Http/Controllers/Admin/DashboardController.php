@@ -17,6 +17,10 @@ class DashboardController extends Controller
             ->when(auth()->user()->role === 'opd', function ($query) {
                 return $query->where('id_unit', session('id_unit'));
             })
+            ->when(auth()->user()->role === 'verifikator', function ($query) {
+                // Gantilah kondisi ini dengan yang sesuai untuk verifikator
+                return $query->where('aset.id_unit', session('id_unit'));
+            })
             ->groupBy('status')
             ->get();
 
@@ -38,6 +42,10 @@ class DashboardController extends Controller
             ->whereIn('tbl_mohon.status', [0, 1, 2, 3])
             ->when(auth()->user()->role === 'opd', function ($query) {
                 return $query->where('id_unit', session('id_unit'));
+            })
+            ->when(auth()->user()->role === 'verifikator', function ($query) {
+                // Gantilah kondisi ini dengan yang sesuai untuk verifikator
+                return $query->where('aset.id_unit', session('id_unit'));
             })
             ->groupBy('tbl_mohon.status')
             ->get();

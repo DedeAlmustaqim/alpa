@@ -23,6 +23,23 @@
 
 
                                 </div>
+                                <hr>
+                                <table cellspacing="0" class="shop_table cart">
+                                    <thead>
+                                        <th>Booking list</th>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($pinjam as $item)
+                                        <tr>
+                                            <td>
+                                                <span class="text-info">{{konversiFormatTanggal($item->tgl_mulai_accept)}} {{$item->jam_mulai_accept}}</span> s/d <span class="text-success">{{konversiFormatTanggal($item->jam_akhir_accept)}} {{$item->jam_akhir}}</span>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                        
+                                    </tbody>
+
+                                </table>
                             </div>
 
                             <div class="col-sm-6">
@@ -52,7 +69,9 @@
                                             </div>
                                             <div role="tabpanel" class="tab-pane fade" id="profile">
                                                 @if (Auth::check())
-                                                    <!-- Formulir ditampilkan jika pengguna sudah login -->
+                                                    @if ($aset->status == 1)
+                                                    <p class="text-center text-danger">Aset dalam Pemeliharaan.</p>
+                                                    @else
                                                     <form method="POST" id="formAsetMohon">
                                                         @csrf
                                                         <!-- Formulir Anda -->
@@ -176,6 +195,9 @@
                                                             <p><input type="submit" value="Kirim"></p>
                                                         </div>
                                                     </form>
+                                                    @endif
+                                                    <!-- Formulir ditampilkan jika pengguna sudah login -->
+                                                    
                                                 @else
                                                     <!-- Pesan atau konten lain yang ditampilkan jika pengguna belum login -->
                                                     <p>Anda harus login untuk mengakses form ini.</p>

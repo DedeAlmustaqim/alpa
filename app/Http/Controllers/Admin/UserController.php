@@ -69,7 +69,7 @@ class UserController extends Controller
                 'tbl_unit.nm_unit',
             )
             ->join('tbl_unit', 'users.id_unit', '=', 'tbl_unit.id')
-            ->where('role', 'opd')
+            ->whereIn('role', ['opd', 'verifikator']) // Menggunakan whereIn
             ->orderBy('users.id', 'ASC')
             //Gunakan kondisi sesuai role login
             //->when(auth()->user()->role === 'role', function ($query) {
@@ -88,6 +88,7 @@ class UserController extends Controller
             [
                 'id_unit_admin' => 'required',
                 'nama_admin' => 'required',
+                'role' => 'required',
                 'email_admin' => 'required|email|unique:users,email', // Email harus unik
                 'no_hp_admin' => 'required|unique:users,no_hp', // No HP harus unik
                 'password_admin' => 'required',
@@ -95,6 +96,7 @@ class UserController extends Controller
             [
                 'id_unit_admin.required' => 'Kolom wajib diisi.',
                 'nama_admin.required' => 'Kolom wajib diisi.',
+                'role.required' => 'Kolom wajib diisi.',
                 'email_admin.required' => 'Kolom wajib diisi.',
                 'email_admin.email' => 'Format email tidak valid.',
                 'email_admin.unique' => 'Email sudah digunakan.', // Pesan untuk email yang tidak unik
@@ -116,6 +118,7 @@ class UserController extends Controller
         $nama_admin = $request->input('nama_admin');
         $email_admin = $request->input('email_admin');
         $no_hp_admin = $request->input('no_hp_admin');
+        $role = $request->input('role');
         $password_admin = $request->input('password_admin');
 
         //Custome Array
@@ -129,7 +132,7 @@ class UserController extends Controller
                     'id_unit' => $id_unit,
                     'email' => $email_admin,
                     'no_hp' => $no_hp_admin,
-                    'role' => 'opd',
+                    'role' => $role,
                     'password' => Hash::make($password_admin), // Enkripsi password
                 ]
             );

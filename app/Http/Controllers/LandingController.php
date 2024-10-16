@@ -32,8 +32,6 @@ class LandingController extends Controller
         'aset.img', 
         'aset.created_at', 
         'aset.updated_at', 
-        'aset.akhir_date', 
-        'aset.akhir_time', 
         'aset.id_unit', 
         'kategori.id as kategori_id', 
         'kategori.kategori', 

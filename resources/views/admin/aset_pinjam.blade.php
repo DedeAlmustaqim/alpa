@@ -31,8 +31,7 @@
                             <th width="10%">Foto</th>
                             <th>NIB</th>
                             <th>Kategori</th>
-                            <th>Masa Pinjam</th>
-                            <th width="12%">Expired</th>
+                            <th>Jumlah Peminjam</th>
                             <th>Unit Kerja</th>
                             <th width="5%"> </th>
                         </tr>
@@ -182,61 +181,28 @@
                     {
                         "orderable": false,
                         "data": function(data) {
-                            var status = data.status == 0 ?
-                                '<span class="badge bg-success">Tersedia</span>' :
-                                '<span class="badge bg-warning">Dipinjam</span>';
-                            return '<span class="text-center">' + status +
-                                '<span class="badge bg-info">' + konversiFormatTanggal(data.mulai_date) +
-                                ' ' + data.mulai_time +
-                                '</span><br><span class="badge bg-danger">' + konversiFormatTanggal(data
-                                    .akhir_date) + ' ' + data.akhir_time + '</span></div>';
+                            return '<div class="text-left">' + data.dipinjam + '</div>'
                         }
                     },
 
-                    // Kolom masa pinjam (tanpa countdown)
-                    {
-                        "orderable": false,
-                        "data": function(data) {
-                            var sekarang = new Date();
-                            var mulaiDateTime = new Date(data.mulai_date + ' ' + data.mulai_time);
-                            var countdownMasaPinjam = getRemainingTime(mulaiDateTime, sekarang);
-                            return '<span class="text-center">' + countdownMasaPinjam + '</span>';
-                        }
-                    },
+                   
 
 
 
                     {
                         "orderable": false,
                         "data": function(data) {
-                            return '<div class="text-left">' + data.nm_unit + '</div>'
+                            return '<div class="text-left">' + data.nm_unit	 + '</div>'
                         }
                     },
                     {
 
                         "orderable": false,
                         "data": function(data, ) {
-                            return `<ul class="nk-tb-actions gx-1 my-n1">
-                                    <li class="me-n1">
-                                        <div class="dropdown">
-                                            <a href="javascript:void(0)" class="dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <ul class="link-list-opt no-bdr">
-                                                     <li><a href="` + BASE_URL +
+                            return `<a class="btn btn-secondary" href="` + BASE_URL +
                                 `/admin/permohonan_detail/` + data.id + `" data-id="` +
                                 data.id +
-                                `"><em class="icon ni ni-edit"></em><span>Kelola</span></a></li>
-                                                     <li><a href="javascript:void(0)" onClick="finishAset(this)"  data-id="` +
-                                data.id + `" data-idmohon="` + data.id_mohon +
-                                `"><em class="icon ni ni-check"></em><span>Selesaikan Status Pinjam</span></a></li>
-                                                    <li><a href="javascript:void(0)" onClick="detailPeminjam(this)" data-id="` +
-                                data.id_mohon +
-                                `" ><em class="icon ni ni-eye"></em><span>Detail Peminjaman</span></a>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>`
+                                `"><em class="icon ni ni-edit"></em><span>Kelola</span></a>`
                         }
                     },
 
@@ -254,31 +220,12 @@
                     var index = page * length + (iDisplayIndex + 1);
                     $('td:eq(0)', row).html(index);
                     // Update countdown setiap detik
-                    var akhirDateTime = new Date(data.akhir_date + ' ' + data.akhir_time);
-                    var countdownCell = $('td:eq(6)', row); // Asumsikan kolom countdown ada di indeks ke-6
-                    setInterval(function() {
-                        countdownCell.html(getRemainingTime(akhirDateTime));
-                    }, 1000);
+                    
                 },
             });
         }
 
-        // Fungsi untuk menghitung sisa waktu
-        function getRemainingTime(endTime) {
-            var now = new Date();
-            var distance = endTime - now;
-
-            if (distance <= 0) {
-                return "<div class='text-center'><span class='badge bg-danger'>Waktu Habis</span></div>";
-            }
-
-            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            return days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
-        }
+       
 
         function finishAset(elem) {
             var id = $(elem).data("id");

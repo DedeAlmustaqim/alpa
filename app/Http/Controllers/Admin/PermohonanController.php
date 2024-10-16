@@ -10,6 +10,17 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Yajra\DataTables\Facades\DataTables;
 
+
+
+/* Status Permohonan 
+
+sedang dimohon = 0
+sedang dipinjam = 1
+selesai = 2
+verifikasi = 3
+
+*/
+
 class PermohonanController extends Controller
 {
     public function index()
@@ -41,7 +52,6 @@ class PermohonanController extends Controller
                 'aset.nama_aset',
                 'aset.deskripsi',
                 'aset.img',
-                'aset.id_mohon',
                 'aset.created_at',
                 'aset.updated_at',
                 'aset.id_unit',
@@ -86,6 +96,9 @@ class PermohonanController extends Controller
             ->join('tbl_unit', 'aset.id_unit', '=', 'tbl_unit.id')
             ->join('kategori', 'aset.id_kategori', '=', 'kategori.id')
             // ->where('table.id', $where)
+            ->when(auth()->user()->role === 'opd' || auth()->user()->role === 'verifikator', function ($query) {
+                return $query->where('aset.id_unit', session('id_unit'));
+            })
             ->orderBy('aset.id', 'ASC');
         //Gunakan kondisi sesuai role login
         //->when(auth()->user()->role === 'role', function (query) {
@@ -95,10 +108,10 @@ class PermohonanController extends Controller
             $query->where('aset.status', $status);
         }
 
-        // Gunakan kondisi sesuai role login
-        $query->when(auth()->user()->role === 'opd', function ($query) {
-            return $query->where('aset.id_unit', session('id_unit'));
-        });
+        // // Gunakan kondisi sesuai role login
+        // $query->when(auth()->user()->role === 'opd', function ($query) {
+        //     return $query->where('aset.id_unit', session('id_unit'));
+        // });
 
         $data = $query->get();
 
@@ -116,7 +129,7 @@ class PermohonanController extends Controller
             ->select(
 
                 'tbl_mohon.id as id_mohon',
-                'tbl_mohon.id as id_aset',
+                'tbl_mohon.id_aset as id_aset',
                 'tbl_mohon.catatan',
                 'tbl_mohon.srt_mohon',
                 'tbl_mohon.tgl_mulai',
@@ -128,9 +141,103 @@ class PermohonanController extends Controller
             )
 
             ->join('users', 'tbl_mohon.id_user', '=', 'users.id', 'left')
-
+            ->join('aset', 'aset.id', '=', 'tbl_mohon.id_aset', 'left')
+            ->when(auth()->user()->role === 'opd' || auth()->user()->role === 'verifikator', function ($query) {
+                return $query->where('aset.id_unit', session('id_unit'));
+            })
             ->where('tbl_mohon.id_aset', $id)
             ->where('tbl_mohon.status', 0)
+         
+            ->orderBy('tbl_mohon.created_at', 'ASC');
+        // Gunakan kondisi sesuai role login
+        // $query->when(auth()->user()->role === 'opd', function ($query) {
+        //     return $query->where('aset.id_unit', session('id_unit'));
+        // });
+
+        $data = $query->get();
+
+        return DataTables::of($data)
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function getAsetMohonVerif($id)
+    {
+        $query = DB::table('tbl_mohon')
+            ->select(
+
+                'tbl_mohon.id as id_mohon',
+                'tbl_mohon.id as id_aset',
+                'tbl_mohon.catatan',
+                'tbl_mohon.srt_mohon',
+                'tbl_mohon.tgl_mulai',
+                'tbl_mohon.tgl_akhir',
+                'tbl_mohon.jam_mulai',
+                'tbl_mohon.jam_akhir',
+                'tbl_mohon.tgl_mulai_accept',
+                'tbl_mohon.tgl_akhir_accept',
+                'tbl_mohon.jam_mulai_accept',
+                'tbl_mohon.jam_akhir_accept',
+                'tbl_mohon.created_at',
+                'tbl_mohon.status',
+                // Memisahkan date_verif menjadi tanggal dan waktu
+                DB::raw('DATE(tbl_mohon.date_verif) as date_verif_date'),
+                DB::raw('TIME(tbl_mohon.date_verif) as date_verif_time'),
+                'users.name'
+            )
+
+            ->join('users', 'tbl_mohon.id_user', '=', 'users.id', 'left')
+            ->join('aset', 'aset.id', '=', 'tbl_mohon.id_aset', 'left')
+            ->when(auth()->user()->role === 'opd' || auth()->user()->role === 'verifikator', function ($query) {
+                return $query->where('aset.id_unit', session('id_unit'));
+            })
+            ->where('tbl_mohon.id_aset', $id)
+            ->where('tbl_mohon.status', 1)
+          
+            ->orderBy('tbl_mohon.created_at', 'ASC');
+        // Gunakan kondisi sesuai role login
+        // $query->when(auth()->user()->role === 'opd', function ($query) {
+        //     return $query->where('aset.id_unit', session('id_unit'));
+        // });
+
+        $data = $query->get();
+
+        return DataTables::of($data)
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function getAsetMohonAccept($id)
+    {
+        $query = DB::table('tbl_mohon')
+            ->select(
+
+                'tbl_mohon.id as id_mohon',
+                'tbl_mohon.id as id_aset',
+                'tbl_mohon.catatan',
+                'tbl_mohon.srt_mohon',
+                'tbl_mohon.tgl_mulai',
+                'tbl_mohon.tgl_akhir',
+                'tbl_mohon.jam_mulai',
+                'tbl_mohon.jam_akhir',
+                'tbl_mohon.tgl_mulai_accept',
+                'tbl_mohon.tgl_akhir_accept',
+                'tbl_mohon.jam_mulai_accept',
+                'tbl_mohon.jam_akhir_accept',
+                'tbl_mohon.created_at',
+                'tbl_mohon.status',
+
+                'users.name'
+            )
+
+            ->join('users', 'tbl_mohon.id_user', '=', 'users.id', 'left')
+            ->join('aset', 'aset.id', '=', 'tbl_mohon.id_aset', 'left')
+            ->when(auth()->user()->role === 'opd' || auth()->user()->role === 'verifikator', function ($query) {
+                return $query->where('aset.id_unit', session('id_unit'));
+            })
+            ->where('tbl_mohon.id_aset', $id)
+            ->where('tbl_mohon.status', 2)
+            
             ->orderBy('tbl_mohon.created_at', 'ASC');
         // Gunakan kondisi sesuai role login
         // $query->when(auth()->user()->role === 'opd', function ($query) {
@@ -155,20 +262,87 @@ class PermohonanController extends Controller
                 'tbl_mohon.srt_mohon',
                 'tbl_mohon.tgl_mulai',
                 'tbl_mohon.tgl_akhir',
+                'tbl_mohon.jam_mulai',
+                'tbl_mohon.jam_akhir',
                 'tbl_mohon.created_at',
                 'tbl_mohon.status',
                 'tbl_mohon.tgl_mulai_accept',
                 'tbl_mohon.tgl_akhir_accept',
                 'tbl_mohon.jam_mulai_accept',
                 'tbl_mohon.jam_akhir_accept',
+                // Memisahkan date_agree menjadi tanggal dan waktu
+                DB::raw('DATE(tbl_mohon.date_agree) as date_agree_date'),
+                DB::raw('TIME(tbl_mohon.date_agree) as date_agree_time'),
+
+                // Memisahkan date_verif menjadi tanggal dan waktu
+                DB::raw('DATE(tbl_mohon.date_verif) as date_verif_date'),
+                DB::raw('TIME(tbl_mohon.date_verif) as date_verif_time'),
+
+                // Memisahkan date_finish menjadi tanggal dan waktu
+                DB::raw('DATE(tbl_mohon.date_finish) as date_finish_date'),
+                DB::raw('TIME(tbl_mohon.date_finish) as date_finish_time'),
 
                 'users.name'
             )
 
             ->join('users', 'tbl_mohon.id_user', '=', 'users.id', 'left')
-
+            ->join('aset', 'aset.id', '=', 'tbl_mohon.id_aset', 'left')
+            ->when(auth()->user()->role === 'opd' || auth()->user()->role === 'verifikator', function ($query) {
+                return $query->where('aset.id_unit', session('id_unit'));
+            })
             ->where('tbl_mohon.id_aset', $id)
-            ->where('tbl_mohon.status', 2)
+            ->where('tbl_mohon.status', 3)
+            
+            ->orderBy('tbl_mohon.created_at', 'ASC');
+        //Gunakan kondisi sesuai role login
+        //->when(auth()->user()->role === 'role', function ($query) {
+        //return $query->where('table.role', session('role'));
+        //})
+        // Gunakan kondisi sesuai role login
+        // $query->when(auth()->user()->role === 'opd', function ($query) {
+        //     return $query->where('aset.id_unit', session('id_unit'));
+        // });
+
+        $data = $query->get();
+        return DataTables::of($data)
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function getAsetMohonReject($id)
+    {
+        $query = DB::table('tbl_mohon')
+            ->select(
+
+                'tbl_mohon.id as id_mohon',
+                'tbl_mohon.id as id_aset',
+                'tbl_mohon.catatan',
+                'tbl_mohon.srt_mohon',
+                'tbl_mohon.note_reject',
+                'tbl_mohon.tgl_mulai',
+                'tbl_mohon.tgl_akhir',
+                'tbl_mohon.jam_mulai',
+                'tbl_mohon.jam_akhir',
+                'tbl_mohon.created_at',
+                'tbl_mohon.status',
+
+                // Memisahkan date_agree menjadi tanggal dan waktu
+                DB::raw('DATE(tbl_mohon.date_reject) as date_reject_date'),
+                DB::raw('TIME(tbl_mohon.date_reject) as date_reject_time'),
+
+
+
+                'users.name'
+            )
+
+            ->join('users', 'tbl_mohon.id_user', '=', 'users.id', 'left')
+            ->join('aset', 'aset.id', '=', 'tbl_mohon.id_aset', 'left')
+            ->when(auth()->user()->role === 'opd' || auth()->user()->role === 'verifikator', function ($query) {
+                return $query->where('aset.id_unit', session('id_unit'));
+            })
+            ->where('tbl_mohon.id_aset', $id)
+            ->where('tbl_mohon.status', 4)
+            
             ->orderBy('tbl_mohon.created_at', 'ASC');
         //Gunakan kondisi sesuai role login
         //->when(auth()->user()->role === 'role', function ($query) {
@@ -226,72 +400,162 @@ class PermohonanController extends Controller
         $jadwal_akhir = $request->input('jadwal_akhir');
         $jadwal_akhir_time = $request->input('jadwal_akhir_time');
         $reschedule = $request->input('reschedule');
+        $status = $request->input('status_mohon');
+        $note_reject = $request->input('note_reject');
 
         $aset = DB::table('aset')->where('id', $id_aset_select)->first();
 
         if ($aset->status == 1) {
-            return response()->json(['success' => false, 'message' => 'Aset telah dipinjam']); // 404: Not Found
+            return response()->json(['success' => false, 'message' => 'Aset dalam pemeliharaan']); // 404: Not Found
         }
 
-        try {
-            DB::table('aset')
-                ->where('id', $id_aset_select)
-                ->update([
-                    'id_mohon' => $id_mohon_select,
-                    'jml_mohon' => DB::raw('jml_mohon - 1'),
-                    'mulai_date' => $jadwal_mulai,
-                    'akhir_date' => $jadwal_akhir,
-                    'mulai_time' => $jadwal_mulai_time,
-                    'akhir_time' => $jadwal_akhir_time,
-                    'status' => 1,
-                    'reschedule' => $reschedule,
-                ]);
+        //verifikasi
+        if ($status == 1) {
+            $validate = [
+                'jml_mohon' => DB::raw('jml_mohon - 1'),
+            ];
 
-            DB::table('tbl_mohon')
-                ->where('id', $id_mohon_select)
-                ->update([
+            try {
+                DB::table('aset')
+                    ->where('id', $id_aset_select)
+                    ->update($validate);
 
-                    'status' => 1,
-                    'tgl_mulai_accept' => $jadwal_mulai,
-                    'tgl_akhir_accept' => $jadwal_akhir,
-                    'jam_mulai_accept' => $jadwal_mulai_time,
-                    'jam_akhir_accept' => $jadwal_akhir_time,
-                    'reschedule_mohon' => $reschedule,
-                ]);
-            return response()->json(['success' => true, 'message' => 'Aset berhasil diperbarui']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal memperbarui Aset. Error: ' . $e->getMessage()]);
+                DB::table('tbl_mohon')
+                    ->where('id', $id_mohon_select)
+                    ->update([
+
+                        'status' => $status, //verifikasi
+                        'tgl_mulai_accept' => $jadwal_mulai,
+                        'tgl_akhir_accept' => $jadwal_akhir,
+                        'jam_mulai_accept' => $jadwal_mulai_time,
+                        'jam_akhir_accept' => $jadwal_akhir_time,
+                        'reschedule_mohon' => $reschedule,
+                        'date_verif' => Carbon::now()->format('Y-m-d H:i:s'),
+
+                    ]);
+                return response()->json(['success' => true, 'message' => 'Aset berhasil diperbarui']);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'Gagal memperbarui Aset. Error: ' . $e->getMessage()]);
+            }
+            //accept
+        } else if ($status == 2) {
+            try {
+
+                DB::table('tbl_mohon')
+                    ->where('id', $id_mohon_select)
+                    ->update([
+
+                        'status' => $status, //verifikasi
+                        'tgl_mulai_accept' => $jadwal_mulai,
+                        'tgl_akhir_accept' => $jadwal_akhir,
+                        'jam_mulai_accept' => $jadwal_mulai_time,
+                        'jam_akhir_accept' => $jadwal_akhir_time,
+                        'reschedule_mohon' => $reschedule,
+                        'date_agree' => Carbon::now()->format('Y-m-d H:i:s'),
+                    ]);
+                return response()->json(['success' => true, 'message' => 'Aset berhasil diperbarui']);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'Gagal memperbarui Aset. Error: ' . $e->getMessage()]);
+            }
+        } else if ($status == 4) {
+            try {
+
+                DB::table('tbl_mohon')
+                    ->where('id', $id_mohon_select)
+                    ->update([
+
+                        'note_reject' => $note_reject, //verifikasi
+                        'status' => $status, //verifikasi
+                        'date_reject' => Carbon::now()->format('Y-m-d H:i:s'),
+                    ]);
+                return response()->json(['success' => true, 'message' => 'Aset berhasil diperbarui']);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'Gagal memperbarui Aset. Error: ' . $e->getMessage()]);
+            }
         }
     }
 
-    public function finishAset($id_aset, $id_mohon)
+    public function finishAset($id_mohon)
     {
-        $aset = DB::table('aset')->find($id_aset);
 
-
-        if (!$aset) {
-            return response()->json(['success' => false, 'message' => 'Aset tidak ditemukan'], 404); // 404: Not Found
-        }
 
         try {
-            DB::table('aset')->where('id', $id_aset)->update([
-                'status' => 0,
-                'id_mohon' => null,
-                'mulai_date' => null,
-                'akhir_date' => null,
-                'reschedule' => 0,
-                'mulai_time' => null,
-                'akhir_time' => null,
-            ]);
-            DB::table('tbl_mohon')->where('id', $id_mohon)->update([
-                'status' => 2,
 
+            DB::table('tbl_mohon')->where('id', $id_mohon)->update([
+                'status' => 3,
+                'date_finish' => Carbon::now()->format('Y-m-d H:i:s'),
             ]);
 
             return response()->json(['success' => true, 'message' => 'Aset berhasil dihapus'], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal menghapus Aset'], 500); // 500: Internal Server Error
         }
+    }
+
+    public function getAsetMohonVerifAll()
+    {
+        $data = [
+            'title' => 'Verifikasi Permohonan'
+        ];
+        return view('admin/permohonan_verif', $data);
+    }
+
+    public function getAsetMohonVerifAllData()
+    {
+        $query = DB::table('tbl_mohon')
+            ->select(
+
+                'tbl_mohon.id as id_mohon',
+                'tbl_mohon.id_aset as id_aset',
+                'tbl_mohon.catatan',
+                'tbl_mohon.srt_mohon',
+                'tbl_mohon.tgl_mulai',
+                'tbl_mohon.tgl_akhir',
+                'tbl_mohon.jam_mulai',
+                'tbl_mohon.jam_akhir',
+                'tbl_mohon.created_at',
+                'tbl_mohon.status',
+                'tbl_mohon.tgl_mulai_accept',
+                'tbl_mohon.tgl_akhir_accept',
+                'tbl_mohon.jam_mulai_accept',
+                'tbl_mohon.jam_akhir_accept',
+                'tbl_mohon.reschedule_mohon',
+                  // Memisahkan date_verif menjadi tanggal dan waktu
+                  DB::raw('DATE(tbl_mohon.date_verif) as date_verif_date'),
+                  DB::raw('TIME(tbl_mohon.date_verif) as date_verif_time'),
+                'users.name',
+                'aset.id as id',
+                'aset.nib_aset',
+                'aset.nama_aset',
+                'aset.id_kategori',
+                'aset.deskripsi',
+                'aset.status',
+                'aset.img',
+                'aset.created_at',
+                'aset.updated_at',
+
+            )
+
+            ->join('users', 'tbl_mohon.id_user', '=', 'users.id', 'left')
+            // ->join('aset', 'tbl_mohon.id_aset', '=', 'aset.id', 'left')
+            ->join('aset', 'aset.id', '=', 'tbl_mohon.id_aset', 'left')
+            ->when(auth()->user()->role === 'opd' || auth()->user()->role === 'verifikator', function ($query) {
+                return $query->where('aset.id_unit', session('id_unit'));
+            })
+
+            ->where('tbl_mohon.status', 1)
+           
+            ->orderBy('tbl_mohon.created_at', 'ASC');
+        // Gunakan kondisi sesuai role login
+        // $query->when(auth()->user()->role === 'opd', function ($query) {
+        //     return $query->where('aset.id_unit', session('id_unit'));
+        // });
+
+        $data = $query->get();
+
+        return DataTables::of($data)
+            ->rawColumns(['action'])
+            ->make(true);
     }
     public function getAsetMohonFinishAll()
     {
@@ -307,7 +571,7 @@ class PermohonanController extends Controller
             ->select(
 
                 'tbl_mohon.id as id_mohon',
-                'tbl_mohon.id as id_aset',
+                'tbl_mohon.id_aset as id_aset',
                 'tbl_mohon.catatan',
                 'tbl_mohon.srt_mohon',
                 'tbl_mohon.tgl_mulai',
@@ -321,29 +585,157 @@ class PermohonanController extends Controller
                 'tbl_mohon.jam_mulai_accept',
                 'tbl_mohon.jam_akhir_accept',
                 'tbl_mohon.reschedule_mohon',
+                // Memisahkan date_agree menjadi tanggal dan waktu
+                DB::raw('DATE(tbl_mohon.date_agree) as date_agree_date'),
+                DB::raw('TIME(tbl_mohon.date_agree) as date_agree_time'),
+
+                // Memisahkan date_verif menjadi tanggal dan waktu
+                DB::raw('DATE(tbl_mohon.date_verif) as date_verif_date'),
+                DB::raw('TIME(tbl_mohon.date_verif) as date_verif_time'),
+
+                // Memisahkan date_finish menjadi tanggal dan waktu
+                DB::raw('DATE(tbl_mohon.date_finish) as date_finish_date'),
+                DB::raw('TIME(tbl_mohon.date_finish) as date_finish_time'),
                 'users.name',
                 'aset.id as id',
                 'aset.nib_aset',
                 'aset.nama_aset',
                 'aset.id_kategori',
-                'aset.id_mohon',
                 'aset.deskripsi',
                 'aset.status',
                 'aset.img',
                 'aset.created_at',
                 'aset.updated_at',
-                'aset.mulai_date',
-                'aset.mulai_time',
-                'aset.akhir_date',
-                'aset.akhir_time',
-                'aset.reschedule',
+
             )
 
             ->join('users', 'tbl_mohon.id_user', '=', 'users.id', 'left')
-            ->join('aset', 'tbl_mohon.id_aset', '=', 'aset.id', 'left')
+            ->join('aset', 'aset.id', '=', 'tbl_mohon.id_aset', 'left')
+            ->when(auth()->user()->role === 'opd' || auth()->user()->role === 'verifikator', function ($query) {
+                return $query->where('aset.id_unit', session('id_unit'));
+            })
 
+            ->where('tbl_mohon.status', 3)
+            
+            ->orderBy('tbl_mohon.created_at', 'ASC');
+        // Gunakan kondisi sesuai role login
+        // $query->when(auth()->user()->role === 'opd', function ($query) {
+        //     return $query->where('aset.id_unit', session('id_unit'));
+        // });
 
-            ->where('tbl_mohon.status', 2)
+        $data = $query->get();
+
+        return DataTables::of($data)
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function getDataStatus($id): JsonResponse
+    {
+        // Ambil data dari tabel tbl_mohon yang sesuai dengan id_aset dan hitung status
+        $data = DB::table('tbl_mohon')
+            ->select(DB::raw('status, COUNT(*) as count'))
+            ->where('id_aset', $id)  // Kondisi where untuk id_aset
+            ->groupBy('status')
+            ->get();
+
+        // Inisialisasi array dengan nilai default 0 untuk setiap status
+        $result = [
+            'sedang_dimohon' => 0,
+            'dalam_verifikasi' => 0,
+            'disetujui' => 0,
+            'selesai' => 0,
+            'ditolak' => 0
+        ];
+
+        // Loop melalui data dan isi jumlah berdasarkan status yang ditemukan
+        foreach ($data as $item) {
+            switch ($item->status) {
+                case 0:
+                    $result['sedang_dimohon'] = $item->count;
+                    break;
+                case 1:
+                    $result['dalam_verifikasi'] = $item->count;
+                    break;
+                case 2:
+                    $result['disetujui'] = $item->count;
+                    break;
+                case 3:
+                    $result['selesai'] = $item->count;
+                    break;
+                case 4:
+                    $result['ditolak'] = $item->count;
+                    break;
+            }
+        }
+
+        return response()->json($result, Response::HTTP_OK);
+    }
+
+    public function getAsetMohonRejectAll()
+    {
+        $data = [
+            'title' => 'Permohonan ditolak'
+        ];
+        return view('admin/permohonan_reject', $data);
+    }
+
+    public function getAsetMohonRejectAllData()
+    {
+        $query = DB::table('tbl_mohon')
+            ->select(
+
+                'tbl_mohon.id as id_mohon',
+                'tbl_mohon.id_aset as id_aset',
+                'tbl_mohon.catatan',
+                'tbl_mohon.srt_mohon',
+                'tbl_mohon.tgl_mulai',
+                'tbl_mohon.tgl_akhir',
+                'tbl_mohon.jam_mulai',
+                'tbl_mohon.jam_akhir',
+                'tbl_mohon.created_at',
+                'tbl_mohon.status',
+                'tbl_mohon.note_reject',
+                'tbl_mohon.tgl_mulai_accept',
+                'tbl_mohon.tgl_akhir_accept',
+                'tbl_mohon.jam_mulai_accept',
+                'tbl_mohon.jam_akhir_accept',
+                'tbl_mohon.reschedule_mohon',
+                // Memisahkan date_agree menjadi tanggal dan waktu
+                DB::raw('DATE(tbl_mohon.date_agree) as date_agree_date'),
+                DB::raw('TIME(tbl_mohon.date_agree) as date_agree_time'),
+
+                // Memisahkan date_verif menjadi tanggal dan waktu
+                DB::raw('DATE(tbl_mohon.date_verif) as date_verif_date'),
+                DB::raw('TIME(tbl_mohon.date_verif) as date_verif_time'),
+
+                // Memisahkan date_finish menjadi tanggal dan waktu
+                DB::raw('DATE(tbl_mohon.date_finish) as date_finish_date'),
+                DB::raw('TIME(tbl_mohon.date_finish) as date_finish_time'),
+
+                DB::raw('DATE(tbl_mohon.date_reject) as date_reject_date'),
+                DB::raw('TIME(tbl_mohon.date_reject) as date_reject_time'),
+                'users.name',
+                'aset.id as id',
+                'aset.nib_aset',
+                'aset.nama_aset',
+                'aset.id_kategori',
+                'aset.deskripsi',
+                'aset.status',
+                'aset.img',
+                'aset.created_at',
+                'aset.updated_at',
+
+            )
+
+            ->join('users', 'tbl_mohon.id_user', '=', 'users.id', 'left')
+            ->join('aset', 'aset.id', '=', 'tbl_mohon.id_aset', 'left')
+            ->when(auth()->user()->role === 'opd' || auth()->user()->role === 'verifikator', function ($query) {
+                return $query->where('aset.id_unit', session('id_unit'));
+            })
+
+            ->where('tbl_mohon.status', 4)
+            
             ->orderBy('tbl_mohon.created_at', 'ASC');
         // Gunakan kondisi sesuai role login
         // $query->when(auth()->user()->role === 'opd', function ($query) {

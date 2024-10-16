@@ -53,10 +53,12 @@
                                                                 @if ($item->status_permohonan == 0)
                                                                     <span class="text-primary">Sedang Dimohon</span>
                                                                 @elseif ($item->status_permohonan == 1)
-                                                                    <span class="text-warning">Disetujui</span>
+                                                                    <span class="text-warning">Dalam Verifikasi</span>
                                                                 @elseif ($item->status_permohonan == 2)
-                                                                    <span class="text-success">Pinjaman Selesai</span>
-                                                                @elseif ($item->status_permohonan == 3)
+                                                                    <span class="text-success">Disetujui</span>
+                                                                    @elseif ($item->status_permohonan == 3)
+                                                                    <span class="text-info">Selesai</span>
+                                                                @elseif ($item->status_permohonan == 4)
                                                                     <span class="text-danger">Ditolak</span>
                                                                 @endif
                                                             </td>
@@ -64,21 +66,21 @@
 
 
                                                             <td class="product-quantity">
-                                                                <small>{{ \App\Helpers\DateHelper::formatTanggalIndonesia($item->tgl_mulai . $item->jam_mulai) }}</small><br>
-                                                                <small>{{ \App\Helpers\DateHelper::formatTanggalIndonesia($item->tgl_akhir . $item->jam_akhir) }}</small>
+                                                                <small>{{ konversiFormatTanggal($item->tgl_mulai . $item->jam_mulai) }}</small><br>
+                                                                <small>{{ konversiFormatTanggal($item->tgl_akhir . $item->jam_akhir) }}</small>
                                                             </td>
 
                                                             <td class="product-quantity">
                                                                 <small>
                                                                     @if ($item->tgl_mulai_accept && $item->jam_mulai_accept)
-                                                                        {{ \App\Helpers\DateHelper::formatTanggalIndonesia($item->tgl_mulai_accept . ' ' . $item->jam_mulai_accept) }}<br>
+                                                                        {{ konversiFormatTanggal($item->tgl_mulai_accept . ' ' . $item->jam_mulai_accept) }}<br>
                                                                     @else
                                                                         {{ '' }}
                                                                     @endif
                                                                 </small>
                                                                 <small>
                                                                     @if ($item->tgl_akhir_accept && $item->jam_akhir_accept)
-                                                                        {{ \App\Helpers\DateHelper::formatTanggalIndonesia($item->tgl_akhir_accept . ' ' . $item->jam_akhir_accept) }}
+                                                                        {{konversiFormatTanggal($item->tgl_akhir_accept . ' ' . $item->jam_akhir_accept) }}
                                                                     @else
                                                                         {{ '' }}
                                                                     @endif

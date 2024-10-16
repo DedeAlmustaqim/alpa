@@ -27,17 +27,7 @@
                         data-target="addProduct" class="toggle btn btn-primary d-none d-md-inline-flex"><em
                             class="icon ni ni-plus"></em><span>Tambah Aset</span></a>
                 </div>
-                <div class="col-4">
-                    <div class="form-control-wrap text-right">
-                        <div class="form-control-select">
-                            <select class="form-control" id="statusDropdown">
-                                <option value="" selected>Semua</option>
-                                <option value="0">Tersedia</option>
-                                <option value="1">Dipinjam</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
 
             <hr>
@@ -76,9 +66,10 @@
                     <form id="formAddAset" method="POST" class="form-validate is-alter gy-3">
                         @if (auth()->user()->role === 'opd')
                             <input type="text" id="id_unit" hidden name="id_unit" value="{{ session('id_unit') }}">
-                                @endif
-                            @if (auth()->user()->role === 'admin') <div class="form-group">
-                            
+                        @endif
+                        @if (auth()->user()->role === 'admin')
+                            <div class="form-group">
+
                                 <label class="form-label" for="id_unit">Unit Kerja</label>
                                 <div class="form-control-wrap ">
                                     <div class="form-control-select">
@@ -95,63 +86,192 @@
 
                                     </div>
                                 </div>
-                        </div> @endif
+                            </div>
+                        @endif
+                        <div class="form-group">
+
+                            <label class="form-label" for="kategori">Kategori</label>
+                            <div class="form-control-wrap ">
+                                <div class="form-control-select">
+
+                                    <select class="form-control" id="kategori" name="kategori" required
+                                        data-msg="Isi isian ini">
+                                        <option value="">Pilih Kategori</option>
+                                        @foreach ($kategori as $item)
+                                            <option value="{{ $item->id }}">{{ $item->kategori }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="nama_aset">Nama Aset</label>
+                            <div class="form-control-wrap">
+                                <input type="text" class="form-control" id="nama_aset" name="nama_aset" required
+                                    data-msg="Isi isian ini">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="nama_aset">NIB Aset</label>
+                            <div class="form-control-wrap">
+                                <input type="text" class="form-control" id="nib_aset" name="nib_aset" required
+                                    data-msg="Isi isian ini">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="id_desa">Deskripsi Aset</label>
+                            <div class="form-control-wrap ">
+                                <div class="form-control-select">
+                                    <textarea id="deskripsi" name="deskripsi" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                            <label class="form-label" for="kategori">Status Aset</label>
+                            <div class="form-control-wrap ">
+                                <div class="form-control-select">
+
+                                    <select class="form-control" id="status" name="status" required
+                                        data-msg="Isi isian ini">
+                                        <option value="0">Tersedia</option>
+                                        <option value="1">Pemeliharan</option>
+
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="customFileLabel">Foto Aset</label>
+                            <div class="form-control-wrap">
+                                <div class="form-file">
+                                    <input type="file" class="form-file-input" id="img_aset" name="img_aset"
+                                        required data-msg="Isi isian ini">
+                                    <label class="form-file-label" for="img_aset">Pilih File</label>
+                                </div>
+                            </div>
+                            <small class="">Ukuran Maksimal 1 Mb, Format JPG/PNG</small>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-lg btn-danger ">Batal</button>
+                            <button type="submit" class="btn btn-lg btn-primary ">Kirim</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer bg-light">
+                    <span class="sub-text">Periksa kembali isian Anda sebelum Kirim</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEditAset" tabindex="1">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Aset</h5>
+                    <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <em class="icon ni ni-cross"></em>
+                    </a>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditAset" method="POST" class="form-validate is-alter gy-3">
+                        <input type="text" name="id_aset_edit" id="id_aset_edit">
+                        @if (auth()->user()->role === 'opd')
+                            <input type="text" id="id_unit_edit" hidden name="id_unit_edit"
+                                value="{{ session('id_unit') }}">
+                        @endif
+                        @if (auth()->user()->role === 'admin')
                             <div class="form-group">
 
-                                <label class="form-label" for="kategori">Kategori</label>
+                                <label class="form-label" for="id_unit_edit">Unit Kerja</label>
                                 <div class="form-control-wrap ">
                                     <div class="form-control-select">
 
-                                        <select class="form-control" id="kategori" name="kategori" required
+
+                                        <select class="form-control" id="id_unit_edit" name="id_unit_edit" required
                                             data-msg="Isi isian ini">
-                                            <option value="">Pilih Kategori</option>
-                                            @foreach ($kategori as $item)
-                                                <option value="{{ $item->id }}">{{ $item->kategori }}</option>
+                                            <option value="">Pilih Unit Kerja</option>
+                                            @foreach ($unit as $item)
+                                                <option value="{{ $item->id }}">{{ $item->nm_unit }}</option>
                                             @endforeach
                                         </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="nama_aset">Nama Aset</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="nama_aset" name="nama_aset" required
-                                        data-msg="Isi isian ini">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="nama_aset">NIB Aset</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="nib_aset" name="nib_aset" required
-                                        data-msg="Isi isian ini">
-                                </div>
-                            </div>
 
-                            <div class="form-group">
-                                <label class="form-label" for="id_desa">Deskripsi Aset</label>
-                                <div class="form-control-wrap ">
-                                    <div class="form-control-select">
-                                        <textarea id="deskripsi" name="deskripsi" class="form-control"></textarea>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="form-group">
-                                <label class="form-label" for="customFileLabel">Foto Aset</label>
-                                <div class="form-control-wrap">
-                                    <div class="form-file">
-                                        <input type="file" class="form-file-input" id="img_aset" name="img_aset"
-                                            required data-msg="Isi isian ini">
-                                        <label class="form-file-label" for="img_aset">Pilih File</label>
                                     </div>
                                 </div>
-                                <small class="">Ukuran Maksimal 1 Mb, Format JPG/PNG</small>
                             </div>
-                            <div class="form-group">
-                                <button type="button" data-bs-dismiss="modal"
-                                    class="btn btn-lg btn-danger ">Batal</button>
-                                <button type="submit" class="btn btn-lg btn-primary ">Kirim</button>
+                        @endif
+                        <div class="form-group">
+
+                            <label class="form-label" for="kategori_edit">Kategori</label>
+                            <div class="form-control-wrap ">
+                                <div class="form-control-select">
+
+                                    <select class="form-control" id="kategori_edit" name="kategori_edit" required
+                                        data-msg="Isi isian ini">
+                                        <option value="">Pilih Kategori</option>
+                                        @foreach ($kategori as $item)
+                                            <option value="{{ $item->id }}">{{ $item->kategori }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="nama_aset_edit">Nama Aset</label>
+                            <div class="form-control-wrap">
+                                <input type="text" class="form-control" id="nama_aset_edit" name="nama_aset_edit"
+                                    required data-msg="Isi isian ini">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="nama_aset_edit">NIB Aset</label>
+                            <div class="form-control-wrap">
+                                <input type="text" class="form-control" id="nib_aset_edit" name="nib_aset_edit"
+                                    required data-msg="Isi isian ini">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="id_desa">Deskripsi Aset</label>
+                            <div class="form-control-wrap ">
+                                <div class="form-control-select">
+                                    <textarea id="deskripsi_edit" name="deskripsi_edit" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                            <label class="form-label" for="kategori">Status Aset</label>
+                            <div class="form-control-wrap ">
+                                <div class="form-control-select">
+
+                                    <select class="form-control" id="status_edit" name="status_edit" required
+                                        data-msg="Isi isian ini">
+                                        <option value="0">Tersedia</option>
+                                        <option value="1">Pemeliharan</option>
+
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="customFileLabel">Foto Aset</label>
+                            <div class="form-control-wrap">
+                                <div class="form-file">
+                                    <input type="file" class="form-file-input" id="img_aset_edit"
+                                        name="img_aset_edit" required data-msg="Isi isian ini">
+                                    <label class="form-file-label" for="img_aset_edit">Pilih File</label>
+                                </div>
+                            </div>
+                            <small class="">Ukuran Maksimal 1 Mb, Format JPG/PNG</small>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-lg btn-danger ">Batal</button>
+                            <button type="submit" class="btn btn-lg btn-primary ">Kirim</button>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer bg-light">
@@ -258,9 +378,17 @@
                     {
                         "orderable": false,
                         "data": function(data) {
-                            var status = data.status == 0 ?
-                                '<span class="badge bg-success">Tersedia</span>' :
-                                '<span class="badge bg-warning">Dipinjam</span>';
+                            var status;
+                            if (data.status == 0) {
+                                status = '<span class="badge bg-success">Tersedia</span>';
+                            } else if (data.status == 1) {
+                                status =
+                                    '<span class="badge bg-secondary">Pemeliharaan</span>'; // Menggunakan warna sekunder untuk pemeliharaan
+                            } else {
+                                status =
+                                    '<span class="badge bg-danger">Status Tidak Diketahui</span>'; // Opsi untuk status yang tidak terdefinisi
+                            }
+
                             return '<div class="text-center">' + status + '</div>';
                         }
                     },
@@ -284,11 +412,11 @@
                                                                              <li><a href="` + BASE_URL +
                                 `/admin/permohonan_detail/` + data.id + `" data-id="` +
                                 data.id +
-                                `"><em class="icon ni ni-edit"></em><span>Kelola</span></a></li>
-                                                                            <li><a href="javasrcipt:void(0)" onClick="detaileAset(this)" data-id="` +
+                                `"><em class="icon ni ni-reports"></em><span>Kelola</span></a></li>
+                                                                            <li><a href="javascript:void(0)" onClick="editAset(this)" data-id="` +
                                 data.id +
-                                `"><em class="icon ni ni-eye"></em><span>Detail Aset</span></a>
-                                                                            <li><a href="javasrcipt:void(0)" onClick="deleteAset(this)" data-id="` +
+                                `"><em class="icon ni ni-edit"></em><span>Edit Aset</span></a>
+                                                                            <li><a href="javascript:void(0)" onClick="deleteAset(this)" data-id="` +
                                 data.id + `"><em class="icon ni ni-trash"></em><span>Hapus Aset</span></a></li>
                                                                         </ul>
                                                                     </div>
@@ -383,5 +511,62 @@
                 }
             });
         }
+
+        function editAset(elem) {
+            var id = $(elem).data("id");
+            $.ajax({
+                url: BASE_URL + '/admin/get-aset-by-id/' + id,
+                type: "GET",
+
+                success: function(data) {
+                    $('#modalEditAset').modal('show')
+                    $('#id_aset_edit').val(data.id)
+                    $('#id_unit_edit').val(data.id_unit)
+                    $('#kategori_edit').val(data.id_kategori)
+                    $('#nama_aset_edit').val(data.nama_aset	)
+                    $('#nib_aset_edit').val(data.nib_aset)
+                    $('#deskripsi_edit').val(data.deskripsi)
+                    $('#status_edit').val(data.status)
+                    
+                },
+                error: function() {
+
+                    Swal.fire('Gagal!', 'Terjadi kesalahan .', 'error');
+                }
+            });
+        }
+
+        $('#formEditAset').on('submit', function(e) {
+            e.preventDefault();
+            var postData = new FormData($("#formEditAset")[0]);
+            var csrfToken = $('meta[name="csrf-token"]').attr('content'); // Ambil token CSRF
+            postData.append('_token', csrfToken); // Sertakan token CSRF di FormData
+            $.ajax({
+                type: "post",
+                url: BASE_URL + "/admin/aset-update", // Pastikan BASE_URL diatur dengan benar
+                processData: false,
+                contentType: false,
+                data: postData,
+                dataType: "JSON",
+                success: function(data) {
+                    if (data.success == false) {
+                        toastr.clear();
+                        data.errors.forEach(function(error) {
+                            // Karena error adalah string, kita bisa langsung menampilkannya
+                            NioApp.Toast('<h5>Gagal Simpan Data</h5><p class="text-danger">' +
+                                error + '</p>', 'error');
+                        });
+                    } else if (data.success == true) {
+                        Swal.fire('Berhasil', 'Data telah disimpan', 'success');
+                        showAset()
+                        $("#formEditAset")[0].reset();
+                        $('#modalEditAset').modal('hide');
+                    }
+                },
+
+            });
+            return false;
+        });
+
     </script>
 @endpush

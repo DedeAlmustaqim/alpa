@@ -80,9 +80,19 @@
                                             <a href="{{ url('/admin/permohonan') }}" class="nk-menu-link"><span
                                                     class="nk-menu-text">Sedang dimohon</span></a>
                                         </li>
+                                        @if (auth()->user()->role === 'verifikator')
+                                        <li class="nk-menu-item">
+                                            <a href="{{ url('/admin/permohonan-verif') }}" class="nk-menu-link"><span
+                                                    class="nk-menu-text">Verifikasi Permohonan</span></a>
+                                        </li>
+                                        @endif
                                         <li class="nk-menu-item">
                                             <a href="{{ url('/admin/permohonan-finish') }}" class="nk-menu-link"><span
-                                                    class="nk-menu-text">Pinjaman Selesai</span></a>
+                                                    class="nk-menu-text">Permohonan Selesai</span></a>
+                                        </li>
+                                        <li class="nk-menu-item">
+                                            <a href="{{ url('/admin/permohonan-reject') }}" class="nk-menu-link"><span
+                                                    class="nk-menu-text">Permohonan Ditolak</span></a>
                                         </li>
 
                                     </ul><!-- .nk-menu-sub -->
@@ -280,6 +290,7 @@
 
     <script>
         var BASE_URL = "{{ url('/') }}";
+        var userRole = "{{ session('role') }}";
         $(document).ready(function() {
             $.fn.dataTableExt.oApi.fnPagingInfo = function(oSettings) {
                 return {

@@ -36,6 +36,7 @@
 
                             <th width="5%">No</th>
                             <th>Nama </th>
+                            <th>Role </th>
                             <th >Email</th>
                             <th >No HP</th>
                             <th >Unit Kerja</th>
@@ -99,6 +100,18 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="form-label" for="nama_admin">Nama</label>
+                            <div class="form-control-wrap">
+                                <select class="form-control" name="role" id="role">
+                                    <option value="">Pilih Role</option>
+                                    <option value="opd">Admin OPD</option>
+                                    <option value="verifikator">Verifikator</option>
+                                    
+                                  
+                                  </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="form-label" for="password_admin">Password</label>
                             <div class="form-control-wrap">
                                 <input type="text" class="form-control " hidden id="password_admin" name="password_admin" required
@@ -129,7 +142,7 @@
             
             $('#modalAddAdmin').on('hidden.bs.modal', function() {
                 // Reset form ketika modal ditutup
-                $("#formAddAset")[0].reset();
+                $("#formAddAdmin")[0].reset();
             });
         });
 
@@ -188,7 +201,15 @@
                                                         </span>`
                         }
                     },
-                    
+                    {
+                        "orderable": false,
+                        "data": function(data) {
+                            return `<span class="tb-product">
+                                                            
+                                                            <span class="title">` + data.role + `</span>
+                                                        </span>`
+                        }
+                    },
                     {
                         "orderable": false,
                         "data": function(data) {

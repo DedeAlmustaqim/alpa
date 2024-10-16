@@ -87,6 +87,49 @@
             margin-top: 10px;
             /* Tambahkan jarak di atas tombol jika diperlukan */
         }
+
+        ,
+
+        ul.pagination-custom {
+            display: flex;
+            justify-content: center;
+            padding-left: 0;
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        ul.pagination-custom li {
+            margin: 0 5px;
+        }
+
+        ul.pagination-custom li a {
+            display: block;
+            padding: 10px 15px;
+            color: #007bff;
+            text-decoration: none;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background-color: #fff;
+            transition: background-color 0.3s ease;
+        }
+
+        ul.pagination-custom li a:hover {
+            background-color: #f0f0f0;
+        }
+
+        ul.pagination-custom li a.bg-red {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        ul.pagination-custom li a.btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        ul.pagination-custom li a.btn-primary:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 
@@ -98,8 +141,8 @@
                 <div class="col-md-8">
                     <div class="user-menu">
                         <ul>
-                            <li><a href="{{ url('/') }}"><i class="fa fa-home"></i> {{$config->pemda}}</a></li>
-                            <li><a href="javascript:void(0)"> {{$config->app_name}}</li>
+                            <li><a href="{{ url('/') }}"><i class="fa fa-home"></i> {{ $config->pemda }}</a></li>
+                            <li><a href="javascript:void(0)"> {{ $config->app_name }}</li>
 
                         </ul>
                     </div>
@@ -115,7 +158,7 @@
             <div class="row">
                 <div class="col-sm-6">
                     <div class="logo">
-                        <h1><a href="{{url('/')}}"><img src="{{ asset($config->logo) }}"></a></h1>
+                        <h1><a href="{{ url('/') }}"><img src="{{ asset($config->logo) }}"></a></h1>
                     </div>
                 </div>
 
@@ -145,12 +188,11 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="{{ url('/') }}">Aset Tersedia</a></li>
-                       
-                        
+                        <li><a href="{{ url('/') }}">Aset </a></li>
+
+
                         @if (Auth::check())
-                       
-                        <li><a href="{{url('/user/list_aset')}}">Permohonan Saya</a></li>
+                            <li><a href="{{ url('/user/list_aset') }}">Permohonan Saya</a></li>
                             <li>
                                 <form id="logout-form-user" action="{{ url('/logout') }}" method="POST"
                                     style="display: none;">
@@ -163,10 +205,9 @@
                                 </a>
                             </li>
                         @endif
-                        
+
                         @if (!Auth::check())
-                        
-                        <li><a href="{{url('/login')}}">Login</a></li>
+                            <li><a href="{{ url('/login') }}">Login</a></li>
                         @endif
 
                     </ul>
@@ -188,98 +229,88 @@
 
     <div class="single-product-area">
 
-        <div class="col-md-12">
-            <div class="product-pagination text-center">
-                <h3 class="">Kategori</h3>
-                <nav>
-                    <ul class="pagination">
-                        <li><a href="{{ url('/') }}">Semua</a></li>
-                        @foreach ($kategori as $k)
-                            <li><a href="{{ url('/kategori/' . $k->id) }}">{{ $k->kategori }}</a></li>
-                        @endforeach
+        
 
 
+        @yield('content')
 
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    @yield('content')
+        <div class="footer-top-area">
+            <div class="zigzag-bottom"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 col-sm-6">
+                        <div class="footer-about-us">
+                            <h2><span>{{ $config->app_name }}</span></h2>
+                            <p>{{ $config->tentang }}</p>
 
-    <div class="footer-top-area">
-        <div class="zigzag-bottom"></div>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 col-sm-6">
-                    <div class="footer-about-us">
-                        <h2><span>{{$config->app_name}}</span></h2>
-                        <p>{{$config->tentang}}</p>
-                        
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-md-6 col-sm-6">
-                    <div class="footer-menu">
-                        <h2 class="footer-wid-title">Kategori</h2>
-                        <ul>
-                            @foreach ($kategori as $k)
-                            <li><a href="{{url('/kategori/'.$k->id)}}">{{$k->kategori}}</a></li>
-                            @endforeach
-                            
-                           
-                        </ul>
+                    <div class="col-md-6 col-sm-6">
+                        <div class="footer-menu">
+                            <h2 class="footer-wid-title">Kategori</h2>
+                            <ul>
+                                @foreach ($kategori as $k)
+                                    <li><a href="{{ url('/kategori/' . $k->id) }}">{{ $k->kategori }}</a></li>
+                                @endforeach
+
+
+                            </ul>
+                        </div>
                     </div>
+
+
+
+
                 </div>
-
-                
-
-               
             </div>
-        </div>
-    </div> <!-- End footer top area -->
+        </div> <!-- End footer top area -->
 
-    <div class="footer-bottom-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="copyright">
-                        <p>&copy; {{$config->pemda}} </p>
+        <div class="footer-bottom-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="copyright">
+                            <p>&copy; {{ $config->pemda }} </p>
+                        </div>
                     </div>
+
+
                 </div>
-
-                
             </div>
-        </div>
-    </div> <!-- End footer bottom area -->
-    <script src="{{ asset('admin/src/app.js') }}?v={{ \Carbon\Carbon::now()->timestamp }}"></script>
-    <!-- Latest jQuery form server -->
-    <script src="https://code.jquery.com/jquery.min.js"></script>
-
-    <!-- Bootstrap JS form CDN -->
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-
-    <!-- jQuery sticky menu -->
-    <script src="{{ asset('catalog/js/owl.carousel.min.js') }}"></script>
-    <script src="{{ asset('catalog/js/jquery.sticky.js') }}"></script>
-
-    <!-- jQuery easing -->
-    <script src="{{ asset('catalog/js/jquery.easing.1.3.min.js') }}"></script>
-
-    <!-- Main Script -->
-    <script src="{{ asset('catalog/js/main.js') }}"></script>
-
-    <!-- Slider -->
-    <script type="text/javascript" src="{{ asset('catalog/js/bxslider.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('catalog/js/script.slider.js') }}"></script>
-    
+        </div> <!-- End footer bottom area -->
+        <script src="{{ asset('catalog/js/jquery.min.js') }}"></script>
+        <script src="{{ asset('admin/src/app.js') }}?v={{ \Carbon\Carbon::now()->timestamp }}"></script>
+        <!-- Latest jQuery form server -->
 
 
-<script type="text/javascript" src="{{ asset('admin/src/jquery-toast-plugin-master/dist/jquery.toast.min.js') }}"></script>
+        <!-- Bootstrap JS form CDN -->
 
-    @stack('scripts')
-    <script>
-        var BASE_URL = "{{ url('/', []) }}"
-    </script>
+        <script src="{{ asset('catalog/js/bootstrap.min.js') }}"></script>
+
+        <!-- jQuery sticky menu -->
+        <script src="{{ asset('catalog/js/owl.carousel.min.js') }}"></script>
+        <script src="{{ asset('catalog/js/jquery.sticky.js') }}"></script>
+
+        <!-- jQuery easing -->
+        <script src="{{ asset('catalog/js/jquery.easing.1.3.min.js') }}"></script>
+
+        <!-- Main Script -->
+        <script src="{{ asset('catalog/js/main.js') }}"></script>
+
+        <!-- Slider -->
+        <script type="text/javascript" src="{{ asset('catalog/js/bxslider.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('catalog/js/script.slider.js') }}"></script>
+
+
+
+        <script type="text/javascript" src="{{ asset('admin/src/jquery-toast-plugin-master/dist/jquery.toast.min.js') }}">
+        </script>
+
+        @stack('scripts')
+        <script>
+            var BASE_URL = "{{ url('/', []) }}"
+        </script>
 </body>
 
 </html>

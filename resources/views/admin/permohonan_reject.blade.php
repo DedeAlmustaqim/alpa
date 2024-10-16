@@ -25,23 +25,18 @@
 
             <hr>
             <div class="table-responsive">
-                <table width="100%" class="table table-bordered wrap" id="tblPermohonanAsetFinishAll">
+                <table width="100%" class="table table-bordered wrap" id="tblPermohonanAsetRejectAll">
                     <thead class="table-light text-center">
                         <tr>
 
                             <th width="5%">No</th>
+                            <th width="18%">Pemohon</th>
+                            <th width="18%">Aset</th>
+                            <th>Surat Permohonan</th>
+                            <th>Mulai - Berakhir </th>
+                            <th>Alasan ditolak</th>
+                            <th>Ditolak pada</th>
 
-                            <th width="10%">Pemohon</th>
-                            <th width="10%"> Nama Aset</th>
-                            <th width="10%">Foto Aset</th>
-                            <th width="10%">Mulai - Berakhir<br>
-                                Pengajuan Pemohon</th>
-                            <th width="10%">Mulai - Berakhir<br>
-                                disetujui</th>
-                            <th width="10%">Surat Permohonan</th>
-                            <th >Riwayat</th>
-
-                            <th width="5%"> </th>
 
                         </tr>
                     </thead>
@@ -58,22 +53,17 @@
 
             showPermohonan()
 
-            $('#modalAddAset').on('hidden.bs.modal', function() {
-                // Reset form ketika modal ditutup
-                $("#formAddAset")[0].reset();
-            });
+
         });
 
 
-        function modalAset() {
-            $('#modalAset').modal('show')
-        }
+
 
         function showPermohonan() {
             var userRole =
                 "{{ auth()->user()->role }}"; // Anda bisa mengganti ini dengan cara lain untuk mendapatkan role
 
-            $('#tblPermohonanAsetFinishAll').DataTable({
+            $('#tblPermohonanAsetRejectAll').DataTable({
                 processing: true,
                 serverSide: true,
                 destroy: true,
@@ -104,7 +94,7 @@
                 },
                 "displayLength": 25,
                 ajax: {
-                    url: BASE_URL + "/admin/permohonan-finish-all-data",
+                    url: BASE_URL + "/admin/permohonan-reject-all-data",
 
                 },
                 "columns": [{
@@ -123,43 +113,12 @@
                                                         </span>`
                         }
                     },
-                    {
-                        "orderable": false,
-                        "data": function(data) {
-                            return '<div class="text-left">' + data.nama_aset + '</div>'
-                        }
-                    },
+
                     {
                         "orderable": false,
                         "data": function(data) {
                             return '<div class="text-center"><img align="center" src="' + data.img +
-                                '" width="100px" alt="" class="thumb"></div>'
-                        }
-                    },
-                    {
-                        "orderable": false,
-                        "data": function(data) {
-
-                            return '<span class="text-center">' + status +
-                                '<span class="badge bg-info">' + konversiFormatTanggal(
-                                    data.tgl_mulai) + ' ' + data.jam_mulai +
-                                '</span><br><span class="badge bg-danger">' + konversiFormatTanggal(
-                                    data.tgl_akhir) + ' ' + data.jam_akhir + '</span></div>';
-                        }
-                    },
-                    {
-                        "orderable": false,
-                        "data": function(data) {
-                            var reschedule_mohon = data.reschedule_mohon == 0 ?
-                                '<span class="badge bg-success">Tanpa Reshedule</span>' :
-                                '<span class="badge bg-warning">Reschedule</span>';
-                            return '<span class="text-center">' + status +
-                                '<span class="badge bg-info">' + konversiFormatTanggal(
-                                    data.tgl_mulai_accept) + ' ' + data.jam_mulai_accept +
-                                '</span><br><span class="badge bg-danger">' + konversiFormatTanggal(
-                                    data.tgl_akhir_accept) + ' ' + data.jam_akhir_accept +
-                                '</span><span class="text-center">' + status +
-                                ' ' + reschedule_mohon + '</div>';
+                                '" width="100px" alt="" class="thumb"><br>' + data.nama_aset + '</div>'
                         }
                     },
                     {
@@ -174,13 +133,30 @@
                         "orderable": false,
                         "data": function(data) {
 
+                            return '<span class="text-center">' + status +
+                                '<span class="badge bg-info">' + konversiFormatTanggal(
+                                    data.tgl_mulai) + ' ' + data.jam_mulai +
+                                '</span><br><span class="badge bg-danger">' + konversiFormatTanggal(
+                                    data.tgl_akhir) + ' ' + data.jam_akhir + '</span></div>';
+                        }
+                    },
 
-                            var html =
-                                `<small>Diterima : ${konversiFormatTanggal(data.date_verif_date)} ${data.date_verif_time}</small><br>
-                            <small>Diverifikasi :  ${konversiFormatTanggal(data.date_verif_date)} ${data.date_verif_time}</small>
-                                <br><small>Diselesaikan :  ${konversiFormatTanggal(data.date_finish_date)} ${data.date_finish_time}</small>`
+                    {
+                        "orderable": false,
+                        "data": function(data) {
+                            return `<span class="tb-product">
+                                                            
+                                                            <span class="title">` + data.note_reject + `</span>
+                                                        </span>`
+                        }
+                    },
+                    {
+                        "orderable": false,
+                        "data": function(data) {
 
-                            return html;
+
+
+                            return konversiFormatTanggal(data.date_reject_date) + '' + data.date_reject_time;
                         }
                     },
 

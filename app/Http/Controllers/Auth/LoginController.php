@@ -62,6 +62,8 @@ class LoginController extends Controller
             return redirect('admin/dashboard');
         } elseif (auth()->user()->role === 'opd') {
             return redirect('admin/dashboard');
+        } elseif (auth()->user()->role === 'verifikator') {
+            return redirect('admin/dashboard');
         } elseif (auth()->user()->role === 'pengguna') {
             return redirect('user/dashboard'); // Gunakan nama rute yang sesuai
         }
